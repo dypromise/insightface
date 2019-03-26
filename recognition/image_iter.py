@@ -43,15 +43,16 @@ class FaceImageIter(io.DataIter):
         if path_imgrec:
             logging.info('loading recordio %s...', path_imgrec)
             path_imgidx = path_imgrec[0:-4] + ".idx"
+            # pylint: disable=redefined-variable-type
             self.imgrec = recordio.MXIndexedRecordIO(
-                path_imgidx, path_imgrec, 'r')  # pylint: disable=redefined-variable-type
+                path_imgidx, path_imgrec, 'r')
             s = self.imgrec.read_idx(0)
             header, _ = recordio.unpack(s)
             if header.flag > 0:
                 print('header0 label', header.label)
                 self.header0 = (int(header.label[0]), int(header.label[1]))
                 # assert(header.flag==1)
-                #self.imgidx = range(1, int(header.label[0]))
+                # self.imgidx = range(1, int(header.label[0]))
                 self.imgidx = []
                 self.id2range = {}
                 self.seq_identity = range(
@@ -161,7 +162,7 @@ class FaceImageIter(io.DataIter):
         return src
 
     def color_aug(self, img, x):
-        #augs = [self.brightness_aug, self.contrast_aug, self.saturation_aug]
+        # augs = [self.brightness_aug, self.contrast_aug, self.saturation_aug]
         # random.shuffle(augs)
         # for aug in augs:
         #  #print(img.shape)
@@ -191,7 +192,7 @@ class FaceImageIter(io.DataIter):
             self.reset()
             self.is_init = True
         """Returns the next batch of data."""
-        #print('in next', self.cur, self.labelcur)
+        # print('in next', self.cur, self.labelcur)
         self.nbatch += 1
         batch_size = self.batch_size
         c, h, w = self.data_shape

@@ -96,6 +96,7 @@ def get_symbol(args):
             fc7 = mx.sym.FullyConnected(
                 data=embedding, weight=_weight, bias=_bias,
                 num_hidden=config.num_classes, name='fc7')
+
     elif config.loss_name == 'margin_softmax':
         _weight = mx.symbol.Variable("fc7_weight",
                                      shape=(config.num_classes,
@@ -131,12 +132,13 @@ def get_symbol(args):
                     body = body - config.loss_m3
                 new_zy = body * s
                 diff = new_zy - zy
-                diff = mx.sym.expand_dims(diff, 1)
+                diff = mx.sym.expand_dims(diff, 1)  # n * 1
                 gt_one_hot = mx.sym.one_hot(
                     gt_label, depth=config.num_classes, on_value=1.0,
                     off_value=0.0)
                 body = mx.sym.broadcast_mul(gt_one_hot, diff)
                 fc7 = fc7 + body
+
     elif config.loss_name.find('triplet') >= 0:
         is_softmax = False
         nembedding = mx.symbol.L2Normalization(
@@ -170,13 +172,14 @@ def get_symbol(args):
                 data=(ap - an + config.triplet_alpha), act_type='relu')
             triplet_loss = mx.symbol.mean(triplet_loss)
         triplet_loss = mx.symbol.MakeLoss(triplet_loss)
+
     out_list = [mx.symbol.BlockGrad(embedding)]
+
     if is_softmax:
         softmax = mx.symbol.SoftmaxOutput(
             data=fc7, label=gt_label, name='softmax', normalization='valid')
         out_list.append(softmax)
         if config.ce_loss:
-            #ce_loss = mx.symbol.softmax_cross_entropy(data=fc7, label = gt_label, name='ce_loss')/args.per_batch_size
             body = mx.symbol.SoftmaxActivation(data=fc7)
             body = mx.symbol.log(body)
             _label = mx.sym.one_hot(
@@ -187,6 +190,7 @@ def get_symbol(args):
     else:
         out_list.append(mx.sym.BlockGrad(gt_label))
         out_list.append(triplet_loss)
+
     out = mx.symbol.Group(out_list)
     return out
 
@@ -228,6 +232,7 @@ def train_net(args):
     mean = None
 
     begin_epoch = 0
+
     if len(args.pretrained) == 0:
         arg_params = None
         aux_params = None
@@ -288,12 +293,12 @@ def train_net(args):
             eval_metrics.append(mx.metric.create(metric2))
 
     if config.net_name == 'fresnet' or config.net_name == 'fmobilefacenet':
+        # resnet style
         initializer = mx.init.Xavier(
-            rnd_type='gaussian', factor_type="out", magnitude=2)  # resnet style
+            rnd_type='gaussian', factor_type="out", magnitude=2)
     else:
         initializer = mx.init.Xavier(
             rnd_type='uniform', factor_type="in", magnitude=2)
-    # initializer = mx.init.Xavier(rnd_type='gaussian', factor_type="out", magnitude=2) #resnet style
     _rescale = 1.0 / args.ctx_num
     opt = optimizer.SGD(learning_rate=args.lr,
                         momentum=args.mom, wd=args.wd, rescale_grad=_rescale)
@@ -315,7 +320,6 @@ def train_net(args):
             acc1, std1, acc2, std2, xnorm, embeddings_list = verification.test(
                 ver_list[i], model, args.batch_size, 10, None, None)
             print('[%s][%d]XNorm: %f' % (ver_name_list[i], nbatch, xnorm))
-            # print('[%s][%d]Accuracy: %1.5f+-%1.5f' % (ver_name_list[i], nbatch, acc1, std1))
             print('[%s][%d]Accuracy-Flip: %1.5f+-%1.5f' %
                   (ver_name_list[i], nbatch, acc2, std2))
             results.append(acc2)
@@ -350,11 +354,6 @@ def train_net(args):
             do_save = False
             is_highest = False
             if len(acc_list) > 0:
-                #lfw_score = acc_list[0]
-                # if lfw_score>highest_acc[0]:
-                #  highest_acc[0] = lfw_score
-                #  if lfw_score>=0.998:
-                #    do_save = True
                 score = sum(acc_list)
                 if acc_list[-1] >= highest_acc[-1]:
                     if acc_list[-1] > highest_acc[-1]:
@@ -364,8 +363,6 @@ def train_net(args):
                             is_highest = True
                             highest_acc[0] = score
                     highest_acc[-1] = acc_list[-1]
-                    # if lfw_score>=0.99:
-                    #  do_save = True
             if is_highest:
                 do_save = True
             if args.ckpt == 0:
@@ -403,7 +400,7 @@ def train_net(args):
               eval_metric=eval_metrics,
               kvstore=args.kvstore,
               optimizer=opt,
-              #optimizer_params   = optimizer_params,
+              # optimizer_params   = optimizer_params,
               initializer=initializer,
               arg_params=arg_params,
               aux_params=aux_params,
