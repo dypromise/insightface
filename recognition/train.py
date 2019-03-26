@@ -246,8 +246,6 @@ def train_net(args):
             args.pretrained, args.pretrained_epoch)
         sym = get_symbol(args)
 
-    # label_name = 'softmax_label'
-    # label_shape = (args.batch_size,)
     model = mx.mod.Module(
         context=ctx,
         symbol=sym,
@@ -326,15 +324,13 @@ def train_net(args):
         return results
 
     highest_acc = [0.0, 0.0]  # lfw and target
-    # for i in xrange(len(ver_list)):
-    #  highest_acc.append(0.0)
     global_step = [0]
     save_step = [0]
     lr_steps = [int(x) for x in args.lr_steps.split(',')]
     print('lr_steps', lr_steps)
 
     def _batch_callback(param):
-        #global global_step
+        # global global_step
         global_step[0] += 1
         mbatch = global_step[0]
         for step in lr_steps:
@@ -375,6 +371,8 @@ def train_net(args):
             if do_save:
                 print('saving', msave)
                 arg, aux = model.get_params()
+
+                # whether to save fc7
                 if config.ckpt_embedding:
                     all_layers = model.symbol.get_internals()
                     _sym = all_layers['fc1_output']
@@ -386,7 +384,9 @@ def train_net(args):
                 else:
                     mx.model.save_checkpoint(
                         prefix, msave, model.symbol, arg, aux)
+
             print('[%d]Accuracy-Highest: %1.5f' % (mbatch, highest_acc[-1]))
+
         if config.max_steps > 0 and mbatch > config.max_steps:
             sys.exit(0)
 

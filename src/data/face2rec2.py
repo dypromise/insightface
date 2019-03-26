@@ -20,15 +20,12 @@ from __future__ import print_function
 import os
 import sys
 
-#curr_path = os.path.abspath(os.path.dirname(__file__))
-#sys.path.append(os.path.join(curr_path, "../python"))
 import mxnet as mx
 import random
 import argparse
 import cv2
 import time
 import traceback
-#from builtins import range
 from easydict import EasyDict as edict
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import face_preprocess
@@ -213,8 +210,8 @@ if __name__ == '__main__':
         print('image_size', image_size)
         args.image_h = image_size[0]
         args.image_w = image_size[1]
-        files = [os.path.join(working_dir, fname) for fname in os.listdir(working_dir)
-                 if os.path.isfile(os.path.join(working_dir, fname))]
+        files = [os.path.join(working_dir, fname) for fname in os.listdir(
+            working_dir) if os.path.isfile(os.path.join(working_dir, fname))]
         count = 0
         for fname in files:
             if fname.startswith(args.prefix) and fname.endswith('.lst'):
@@ -226,8 +223,9 @@ if __name__ == '__main__':
                     q_in = [multiprocessing.Queue(1024)
                             for i in range(args.num_thread)]
                     q_out = multiprocessing.Queue(1024)
-                    read_process = [multiprocessing.Process(target=read_worker, args=(args, q_in[i], q_out))
-                                    for i in range(args.num_thread)]
+                    read_process = [multiprocessing.Process(
+                        target=read_worker, args=(args, q_in[i], q_out))
+                        for i in range(args.num_thread)]
                     for p in read_process:
                         p.start()
                     write_process = multiprocessing.Process(
@@ -254,8 +252,9 @@ if __name__ == '__main__':
                     fname = os.path.basename(fname)
                     fname_rec = os.path.splitext(fname)[0] + '.rec'
                     fname_idx = os.path.splitext(fname)[0] + '.idx'
-                    record = mx.recordio.MXIndexedRecordIO(os.path.join(working_dir, fname_idx),
-                                                           os.path.join(working_dir, fname_rec), 'w')
+                    record = mx.recordio.MXIndexedRecordIO(
+                        os.path.join(working_dir, fname_idx),
+                        os.path.join(working_dir, fname_rec), 'w')
                     cnt = 0
                     pre_time = time.time()
                     for i, item in enumerate(image_list):
@@ -263,8 +262,6 @@ if __name__ == '__main__':
                         if q_out.empty():
                             continue
                         _, s, item = q_out.get()
-                        #header, _ = mx.recordio.unpack(s)
-                        #print('write header label', header.label)
                         record.write_idx(item[0], s)
                         if cnt % 1000 == 0:
                             cur_time = time.time()
