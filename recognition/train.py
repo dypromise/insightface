@@ -81,12 +81,11 @@ def get_symbol(args):
     gt_label = all_label
     is_softmax = True
     if config.loss_name == 'softmax':  # softmax
-        _weight = mx.symbol.Variable("fc7_weight",
-                                     shape=(config.num_classes,
-                                            config.emb_size),
-                                     lr_mult=config.fc7_lr_mult,
-                                     wd_mult=config.fc7_wd_mult,
-                                     init=mx.init.Normal(0.01))
+        _weight = mx.symbol.Variable(
+            "fc7_weight", shape=(config.num_classes, config.emb_size),
+            lr_mult=config.fc7_lr_mult, wd_mult=config.fc7_wd_mult,
+            init=mx.init.Normal(0.01))
+
         if config.fc7_no_bias:
             fc7 = mx.sym.FullyConnected(
                 data=embedding, weight=_weight, no_bias=True,
@@ -98,19 +97,20 @@ def get_symbol(args):
                 num_hidden=config.num_classes, name='fc7')
 
     elif config.loss_name == 'margin_softmax':
-        _weight = mx.symbol.Variable("fc7_weight",
-                                     shape=(config.num_classes,
-                                            config.emb_size),
-                                     lr_mult=config.fc7_lr_mult,
-                                     wd_mult=config.fc7_wd_mult,
-                                     init=mx.init.Normal(0.01))
+        _weight = mx.symbol.Variable(
+            "fc7_weight", shape=(config.num_classes, config.emb_size),
+            lr_mult=config.fc7_lr_mult, wd_mult=config.fc7_wd_mult,
+            init=mx.init.Normal(0.01))
+
         s = config.loss_s
         _weight = mx.symbol.L2Normalization(_weight, mode='instance')
         nembedding = mx.symbol.L2Normalization(
             embedding, mode='instance', name='fc1n') * s
+
         fc7 = mx.sym.FullyConnected(
             data=nembedding, weight=_weight, no_bias=True,
             num_hidden=config.num_classes, name='fc7')
+
         if config.loss_m1 != 1.0 or config.loss_m2 != 0.0 or \
                 config.loss_m3 != 0.0:
             if config.loss_m1 == 1.0 and config.loss_m2 == 0.0:
@@ -183,7 +183,8 @@ def get_symbol(args):
             body = mx.symbol.SoftmaxActivation(data=fc7)
             body = mx.symbol.log(body)
             _label = mx.sym.one_hot(
-                gt_label, depth=config.num_classes, on_value=-1.0, off_value=0.0)
+                gt_label, depth=config.num_classes, on_value=-1.0,
+                off_value=0.0)
             body = body * _label
             ce_loss = mx.symbol.sum(body) / args.per_batch_size
             out_list.append(mx.symbol.BlockGrad(ce_loss))
@@ -218,21 +219,18 @@ def train_net(args):
     args.image_channel = config.image_shape[2]
 
     data_dir = config.dataset_path
-    path_imgrec = None
-    path_imglist = None
     image_size = config.image_shape[0:2]
     assert len(image_size) == 2
     assert image_size[0] == image_size[1]
     print('image_size', image_size)
     print('num_classes', config.num_classes)
+    path_imglist = None
     path_imgrec = os.path.join(data_dir, "train.rec")
-
     print('Called with argument:', args, config)
     data_shape = (args.image_channel, image_size[0], image_size[1])
     mean = None
 
-    begin_epoch = 0
-
+    # Whether to load pre-trained
     if len(args.pretrained) == 0:
         arg_params = None
         aux_params = None
@@ -246,12 +244,13 @@ def train_net(args):
             args.pretrained, args.pretrained_epoch)
         sym = get_symbol(args)
 
+    # Net module
     model = mx.mod.Module(
         context=ctx,
         symbol=sym,
     )
-    val_dataiter = None
 
+    # Train DataIter
     if config.loss_name.find('triplet') >= 0:
         from triplet_image_iter import FaceImageIter
         triplet_params = [config.triplet_bag_size,
@@ -290,6 +289,10 @@ def train_net(args):
             metric2 = LossValueMetric()
             eval_metrics.append(mx.metric.create(metric2))
 
+    # Val DataIter
+    val_dataiter = None
+
+    # Net style
     if config.net_name == 'fresnet' or config.net_name == 'fmobilefacenet':
         # resnet style
         initializer = mx.init.Xavier(
@@ -297,11 +300,13 @@ def train_net(args):
     else:
         initializer = mx.init.Xavier(
             rnd_type='uniform', factor_type="in", magnitude=2)
+
+    # Optimizer
     _rescale = 1.0 / args.ctx_num
     opt = optimizer.SGD(learning_rate=args.lr,
                         momentum=args.mom, wd=args.wd, rescale_grad=_rescale)
-    _cb = mx.callback.Speedometer(args.batch_size, args.frequent)
 
+    # Real validation method
     ver_list = []
     ver_name_list = []
     for name in config.val_targets:
@@ -323,11 +328,16 @@ def train_net(args):
             results.append(acc2)
         return results
 
+    # Global vars
+    begin_epoch = 0
     highest_acc = [0.0, 0.0]  # lfw and target
     global_step = [0]
     save_step = [0]
     lr_steps = [int(x) for x in args.lr_steps.split(',')]
     print('lr_steps', lr_steps)
+
+    # Batch callback
+    _cb = mx.callback.Speedometer(args.batch_size, args.frequent)
 
     def _batch_callback(param):
         # global global_step
@@ -390,9 +400,13 @@ def train_net(args):
         if config.max_steps > 0 and mbatch > config.max_steps:
             sys.exit(0)
 
+    # Epoch callback
     epoch_cb = None
+
+    # Wrap train iter
     train_dataiter = mx.io.PrefetchingIter(train_dataiter)
 
+    # Model fit
     model.fit(train_dataiter,
               begin_epoch=begin_epoch,
               num_epoch=999999,
