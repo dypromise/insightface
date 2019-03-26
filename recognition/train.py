@@ -173,11 +173,13 @@ def get_symbol(args):
             triplet_loss = mx.symbol.mean(triplet_loss)
         triplet_loss = mx.symbol.MakeLoss(triplet_loss)
 
+    # output1
     out_list = [mx.symbol.BlockGrad(embedding)]
 
     if is_softmax:
         softmax = mx.symbol.SoftmaxOutput(
             data=fc7, label=gt_label, name='softmax', normalization='valid')
+        # output2
         out_list.append(softmax)
         if config.ce_loss:
             body = mx.symbol.SoftmaxActivation(data=fc7)
@@ -187,9 +189,12 @@ def get_symbol(args):
                 off_value=0.0)
             body = body * _label
             ce_loss = mx.symbol.sum(body) / args.per_batch_size
+            # output3
             out_list.append(mx.symbol.BlockGrad(ce_loss))
     else:
+        # output2
         out_list.append(mx.sym.BlockGrad(gt_label))
+        # output3
         out_list.append(triplet_loss)
 
     out = mx.symbol.Group(out_list)
