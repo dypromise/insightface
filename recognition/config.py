@@ -97,7 +97,7 @@ dataset.emore.dataset = 'emore'
 dataset.emore.dataset_path = '../datasets/faces_emore'
 dataset.emore.num_classes = 85742
 dataset.emore.image_shape = (112, 112, 3)
-dataset.emore.val_targets = ['lfw', 'cfp_fp', 'agedb_30']
+dataset.emore.val_targets =  ['lfw', 'agedb_30', 'cfp_fp'] # change this!!!
 
 loss = edict()
 loss.softmax = edict()
