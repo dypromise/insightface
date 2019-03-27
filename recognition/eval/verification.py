@@ -73,7 +73,7 @@ def calculate_roc(thresholds, embeddings1, embeddings2, actual_issame,
 
     if pca == 0:
         diff = np.subtract(embeddings1, embeddings2)
-        dist = np.sum(np.square(diff), 1)
+        dist = np.sum(np.square(diff), 1)  # 1-d ndarray
 
     for fold_idx, (train_set, test_set) in enumerate(k_fold.split(indices)):
         # print('train_set', train_set)
@@ -188,11 +188,13 @@ def evaluate(embeddings, actual_issame, nrof_folds=10, pca=0):
     thresholds = np.arange(0, 4, 0.001)
     val, val_std, far = calculate_val(
         thresholds, embeddings1, embeddings2, np.asarray(actual_issame),
-        1e-3, nrof_folds=nrof_folds)
+        far_target=1e-3, nrof_folds=nrof_folds)
     return tpr, fpr, accuracy, val, val_std, far
 
 
 def load_bin(path, image_size):
+    """ Load pickle bin file
+    """
     bins, issame_list = pickle.load(open(path, 'rb'))
     data_list = []
     for flip in [0, 1]:
@@ -268,16 +270,17 @@ def test(data_set, mx_model, batch_size, nfolds=10, data_extra=None,
 
     embeddings = embeddings_list[0].copy()  # not flip part
     embeddings = sklearn.preprocessing.normalize(embeddings)
-    acc1 = 0.0
-    std1 = 0.0
+    # acc1 = 0.0
+    # std1 = 0.0
     embeddings = embeddings_list[0] + embeddings_list[1]  # add
     embeddings = sklearn.preprocessing.normalize(embeddings)
     print(embeddings.shape)
     print('infer time', time_consumed)
-    _, _, accuracy, val, val_std, far = evaluate(
+    tpr, fpr, accuracy, val, val_std, far = evaluate(
         embeddings, issame_list, nrof_folds=nfolds)
     acc2, std2 = np.mean(accuracy), np.std(accuracy)
-    return acc1, std1, acc2, std2, _xnorm, embeddings_list
+    print("validation rate: {} @FAR={}".format(val, far))
+    return tpr, fpr, acc2, std2, _xnorm, embeddings_list
 
 
 def test_badcase(data_set, mx_model, batch_size, name='', data_extra=None,

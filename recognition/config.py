@@ -7,27 +7,17 @@ config = edict()
 config.bn_mom = 0.9
 config.workspace = 256
 config.emb_size = 512
-<<<<<<< HEAD
 config.ckpt_embedding = False  # False to save fc7 weights
-=======
-config.ckpt_embedding = False
->>>>>>> 0eb1996f55672332b2d43b25dc9c57290df17569
 config.net_se = 0
 config.net_act = 'prelu'
 config.net_unit = 3
 config.net_input = 1
 config.net_output = 'E'
 config.net_multiplier = 1.0
-<<<<<<< HEAD
 # last one is to evaluate Highest Acc
 config.val_targets = ['lfw', 'agedb_30', 'cfp_fp']
 config.ce_loss = True
 config.fc7_lr_mult = 10  # if fine-tune, set to 10, ori is 1
-=======
-config.val_targets = ['lfw', 'agedb_30', 'cfp_fp']
-config.ce_loss = True
-config.fc7_lr_mult = 10
->>>>>>> 0eb1996f55672332b2d43b25dc9c57290df17569
 config.fc7_wd_mult = 1.0
 config.fc7_no_bias = False
 config.max_steps = 0
@@ -108,11 +98,7 @@ dataset.emore.dataset = 'emore'
 dataset.emore.dataset_path = '../datasets/faces_emore'
 dataset.emore.num_classes = 85742
 dataset.emore.image_shape = (112, 112, 3)
-<<<<<<< HEAD
 dataset.emore.val_targets = ['lfw', 'agedb_30', 'cfp_fp']  # change !!!
-=======
-dataset.emore.val_targets =  ['lfw', 'agedb_30', 'cfp_fp'] # change this!!!
->>>>>>> 0eb1996f55672332b2d43b25dc9c57290df17569
 
 loss = edict()
 loss.softmax = edict()

@@ -49,7 +49,8 @@ def read_list(path_in):
             item = edict()
             item.flag = 0
             (item.image_path, label, item.bbox,
-             item.landmark, item.aligned) = face_preprocess.parse_lst_line(line)
+             item.landmark, item.aligned
+             ) = face_preprocess.parse_lst_line(line)
             if not item.aligned and item.landmark is None:
                 # print('ignore line', line)
                 continue

@@ -329,7 +329,7 @@ def train_net(args):
     def ver_test(nbatch):
         results = []
         for i in xrange(len(ver_list)):
-            acc1, std1, acc2, std2, xnorm, embeddings_list = verification.test(
+            _, _, acc2, std2, xnorm, embeddings_list = verification.test(
                 ver_list[i], model, args.batch_size, 10, None, None)
             print('[%s][%d]XNorm: %f' % (ver_name_list[i], nbatch, xnorm))
             print('[%s][%d]Accuracy-Flip: %1.5f+-%1.5f' %
