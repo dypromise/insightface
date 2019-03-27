@@ -229,7 +229,7 @@ def test(data_set, mx_model, batch_size, nfolds=10, data_extra=None,
         _label = nd.ones((batch_size,))
     else:
         _label = nd.ones(label_shape)
-    for i in xrange(len(data_list)):
+    for i in xrange(len(data_list)):  # flip and not
         data = data_list[i]
         embeddings = None
         ba = 0
@@ -266,11 +266,11 @@ def test(data_set, mx_model, batch_size, nfolds=10, data_extra=None,
             _xnorm_cnt += 1
     _xnorm /= _xnorm_cnt
 
-    embeddings = embeddings_list[0].copy()
+    embeddings = embeddings_list[0].copy()  # not flip part
     embeddings = sklearn.preprocessing.normalize(embeddings)
     acc1 = 0.0
     std1 = 0.0
-    embeddings = embeddings_list[0] + embeddings_list[1]
+    embeddings = embeddings_list[0] + embeddings_list[1]  # add
     embeddings = sklearn.preprocessing.normalize(embeddings)
     print(embeddings.shape)
     print('infer time', time_consumed)

@@ -96,17 +96,21 @@ def get_symbol(args):
                 data=embedding, weight=_weight, bias=_bias,
                 num_hidden=config.num_classes, name='fc7')
 
-    elif config.loss_name == 'margin_softmax':
+    elif config.loss_name == 'margin_softmax':  # like arcface
         _weight = mx.symbol.Variable(
             "fc7_weight", shape=(config.num_classes, config.emb_size),
             lr_mult=config.fc7_lr_mult, wd_mult=config.fc7_wd_mult,
             init=mx.init.Normal(0.01))
 
+        # scale
         s = config.loss_s
+
+        # normalization for weights and embeddings
         _weight = mx.symbol.L2Normalization(_weight, mode='instance')
         nembedding = mx.symbol.L2Normalization(
             embedding, mode='instance', name='fc1n') * s
 
+        # fc7 layer
         fc7 = mx.sym.FullyConnected(
             data=nembedding, weight=_weight, no_bias=True,
             num_hidden=config.num_classes, name='fc7')
@@ -359,6 +363,7 @@ def train_net(args):
             print('lr-batch-epoch:', opt.lr, param.nbatch, param.epoch)
 
         if mbatch >= 0 and mbatch % args.verbose == 0:
+            # Be careful the order of config.val_targets!!!
             acc_list = ver_test(mbatch)
             save_step[0] += 1
             msave = save_step[0]
