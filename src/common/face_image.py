@@ -125,7 +125,8 @@ def get_dataset_megaface(input_dir):
                             # print('bb')
                         if 'landmarks' in data:
                             landmarks = data['landmarks']
-                            if '1' in landmarks and '0' in landmarks and '2' in landmarks:
+                            if '1' in landmarks and '0' in landmarks and \
+                                    '2' in landmarks:
                                 fimage.landmark = np.zeros(
                                     (3, 2), dtype=np.float32)
                                 fimage.landmark[0][0] = landmarks['1']['x']
@@ -173,7 +174,8 @@ def get_dataset_fgnet(input_dir):
                         # print('bb')
                     if 'landmarks' in data:
                         landmarks = data['landmarks']
-                        if '1' in landmarks and '0' in landmarks and '2' in landmarks:
+                        if '1' in landmarks and '0' in landmarks and \
+                                '2' in landmarks:
                             fimage.landmark = np.zeros(
                                 (3, 2), dtype=np.float32)
                             fimage.landmark[0][0] = landmarks['1']['x']
@@ -184,7 +186,7 @@ def get_dataset_fgnet(input_dir):
                             fimage.landmark[2][1] = landmarks['2']['y']
                         # print('lm')
 
-                #fimage.landmark = None
+                # fimage.landmark = None
                 ret.append(fimage)
         label += 1
     return ret

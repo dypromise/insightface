@@ -70,7 +70,7 @@ def preprocess(img, bbox=None, landmark=None, **kwargs):
         tform = trans.SimilarityTransform()
         tform.estimate(dst, src)
         M = tform.params[0:2, :]
-        #M = cv2.estimateRigidTransform( dst.reshape(1,5,2), src.reshape(1,5,2), False)
+        # M = cv2.estimateRigidTransform( dst.reshape(1,5,2), src.reshape(1,5,2), False)
 
     if M is None:
         if bbox is None:  # use center crop
@@ -94,17 +94,17 @@ def preprocess(img, bbox=None, landmark=None, **kwargs):
     else:  # do align using landmark
         assert len(image_size) == 2
 
-        #src = src[0:3,:]
-        #dst = dst[0:3,:]
+        # src = src[0:3,:]
+        # dst = dst[0:3,:]
 
-        #print(src.shape, dst.shape)
+        # print(src.shape, dst.shape)
         # print(src)
         # print(dst)
         # print(M)
         warped = cv2.warpAffine(
             img, M, (image_size[1], image_size[0]), borderValue=0.0)
 
-        #tform3 = trans.ProjectiveTransform()
-        #tform3.estimate(src, dst)
-        #warped = trans.warp(img, tform3, output_shape=_shape)
+        # tform3 = trans.ProjectiveTransform()
+        # tform3.estimate(src, dst)
+        # warped = trans.warp(img, tform3, output_shape=_shape)
         return warped

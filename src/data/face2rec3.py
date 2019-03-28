@@ -27,7 +27,6 @@ import time
 from easydict import EasyDict as edict
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import face_preprocess
-import face_image
 
 try:
     import multiprocessing
@@ -185,11 +184,6 @@ label in the record file')
 if __name__ == '__main__':
     args = parse_args()
     working_dir = args.working_dir
-    # prop = face_image.load_property(args.property)
-    # image_size = prop.image_size
-    # print('image_size', image_size)
-    # args.image_h = image_size[0]
-    # args.image_w = image_size[1]
     args.image_h = 112
     args.image_w = 112
     fname = args.lst
