@@ -279,8 +279,7 @@ def test(data_set, mx_model, batch_size, nfolds=10, data_extra=None,
     tpr, fpr, accuracy, val, val_std, far = evaluate(
         embeddings, issame_list, nrof_folds=nfolds)
     acc2, std2 = np.mean(accuracy), np.std(accuracy)
-    print("validation rate: {} @FAR={}".format(val, far))
-    return tpr, fpr, acc2, std2, _xnorm, embeddings_list
+    return tpr, fpr, acc2, std2, _xnorm, embeddings_list, val, val_std
 
 
 def test_badcase(data_set, mx_model, batch_size, name='', data_extra=None,
