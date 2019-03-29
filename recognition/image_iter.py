@@ -38,21 +38,23 @@ class FaceImageIter(io.DataIter):
                  data_name='data',
                  label_name='softmax_label',
                  **kwargs):
+
         super(FaceImageIter, self).__init__()
         assert path_imgrec
         if path_imgrec:
             logging.info('loading recordio %s...', path_imgrec)
             path_imgidx = path_imgrec[0:-4] + ".idx"
-            # pylint: disable=redefined-variable-type
             self.imgrec = recordio.MXIndexedRecordIO(
                 path_imgidx, path_imgrec, 'r')
             s = self.imgrec.read_idx(0)
             header, _ = recordio.unpack(s)
+            print("*************************************************")
+            print("* DATASET INFOS")
+            print("*************************************************")
             if header.flag > 0:
-                print('header0 label', header.label)
+                print('header0\'label:', header.label)
+                print('num_ids: ', int(header.label[1]) - int(header.label[0]))
                 self.header0 = (int(header.label[0]), int(header.label[1]))
-                # assert(header.flag==1)
-                # self.imgidx = range(1, int(header.label[0]))
                 self.imgidx = []
                 self.id2range = {}
                 self.seq_identity = range(
@@ -66,15 +68,16 @@ class FaceImageIter(io.DataIter):
                         continue
                     self.id2range[identity] = (a, b)
                     self.imgidx += range(a, b)
-                print('id2range', len(self.id2range))
+                print('len_id2range:', len(self.id2range))
             else:
                 self.imgidx = list(self.imgrec.keys)
             if shuffle:
                 self.seq = self.imgidx
                 self.oseq = self.imgidx
-                print(len(self.seq))
+                print('num_faces:', len(self.seq))
             else:
                 self.seq = None
+            print("*************************************************\n")
 
         self.mean = mean
         self.nd_mean = None
@@ -113,7 +116,8 @@ class FaceImageIter(io.DataIter):
 
     def next_sample(self):
         """Helper function for reading in next sample."""
-        # set total batch size, for example, 1800, and maximum size for each people, for example 45
+        # set total batch size, for example, 1800, and maximum size for each
+        # people, for example 45
         if self.seq is not None:
             while True:
                 if self.cur >= len(self.seq):
@@ -246,7 +250,8 @@ class FaceImageIter(io.DataIter):
                 # data = self.augmentation_transform(data)
                 # print('bb',data[0].shape)
                 for datum in data:
-                    assert i < batch_size, 'Batch size must be multiples of augmenter output length'
+                    assert i < batch_size, 'Batch size must be multiples of \
+                        augmenter output length'
                     # print(datum.shape)
                     batch_data[i][:] = self.postprocess_data(datum)
                     batch_label[i][:] = label
