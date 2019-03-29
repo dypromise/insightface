@@ -41,6 +41,7 @@ def parse_args():
     parser.add_argument('--network', default=default.network,
                         help='network config')
     parser.add_argument('--loss', default=default.loss, help='loss config')
+
     args, rest = parser.parse_known_args()
     generate_config(args.network, args.dataset, args.loss)
     parser.add_argument('--models-root', default=default.models_root,
@@ -233,7 +234,6 @@ def train_net(args):
     assert image_size[0] == image_size[1]
     print('image_size', image_size)
     print('num_classes', config.num_classes)
-    path_imglist = None
     path_imgrec = os.path.join(data_dir, "train.rec")
     print('Called with argument:', args, config)
     data_shape = (args.image_channel, image_size[0], image_size[1])

@@ -49,7 +49,6 @@ def get_embedding(args, imgrec, id, image_size, model):
         _batch_size = bb - ba
         _batch_size2 = max(_batch_size, args.ctx_num)
         data = nd.zeros((_batch_size2, 3, image_size[0], image_size[1]))
-        count = bb - ba
         ii = 0
         for i in xrange(ba, bb):
             header, img = mx.recordio.unpack(ocontents[i])
@@ -79,6 +78,8 @@ def main(args):
     prop = face_image.load_property(include_datasets[0])
     image_size = prop.image_size
     print('image_size', image_size)
+
+    # If use model
     model = None
     if len(args.model) > 0:
         ctx = []
@@ -105,6 +106,8 @@ def main(args):
         model.set_params(arg_params, aux_params)
     else:
         assert args.param1 == 0.0
+
+    # Collect identities
     rec_list = []
     for ds in include_datasets:
         path_imgrec = os.path.join(ds, 'train.rec')
@@ -123,9 +126,7 @@ def main(args):
         assert header.flag > 0
         print('header0 label', header.label)
         header0 = (int(header.label[0]), int(header.label[1]))
-        # assert(header.flag==1)
         imgidx = range(1, int(header.label[0]))
-        id2range = {}
         seq_identity = range(int(header.label[0]), int(header.label[1]))
         pp = 0
         for identity in seq_identity:
@@ -160,6 +161,7 @@ def main(args):
                 all_id_list.append(id_item)
             print(ds_id, len(id_list), len(all_id_list))
 
+    # If exclude
     if len(args.exclude) > 0:
         if os.path.isdir(args.exclude):
             _path_imgrec = os.path.join(args.exclude, 'train.rec')
@@ -218,11 +220,14 @@ def main(args):
 
     if args.test > 0:
         return
-
     if not os.path.exists(args.output):
         os.makedirs(args.output)
+
+    # Re-assemble
     writer = mx.recordio.MXIndexedRecordIO(os.path.join(
         args.output, 'train.idx'), os.path.join(args.output, 'train.rec'), 'w')
+
+    # second part in record
     idx = 1
     identities = []
     nlabel = -1
@@ -244,12 +249,16 @@ def main(args):
             s = mx.recordio.pack(nheader, _content)
             writer.write_idx(idx, s)
             idx += 1
+
+    # third part in record
     id_idx = idx
     for id_label in identities:
         _header = mx.recordio.IRHeader(1, id_label, idx, 0)
         s = mx.recordio.pack(_header, '')
         writer.write_idx(idx, s)
         idx += 1
+
+    # head in record, idx:0
     _header = mx.recordio.IRHeader(1, (id_idx, idx), 0, 0)
     s = mx.recordio.pack(_header, '')
     writer.write_idx(0, s)

@@ -185,7 +185,7 @@ def get_paths(lfw_dir, pairs, file_ext):
             issame = False
         # Only add the pair if both paths exist
         if os.path.exists(path0) and os.path.exists(path1):
-            path_list += (path0, path1)
+            path_list += [path0, path1]  # extend
             issame_list.append(issame)
         else:
             print('not exists', path0, path1)

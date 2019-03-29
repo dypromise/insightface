@@ -23,7 +23,7 @@ lfw_bins = []
 i = 0
 for path in lfw_paths:
     with open(path, 'rb') as fin:
-        _bin = fin.read()
+        _bin = fin.read()  # directly read image in binary format
         lfw_bins.append(_bin)
         # img = mx.image.imdecode(_bin)
         # img = nd.transpose(img, axes=(2, 0, 1))\

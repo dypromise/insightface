@@ -24,7 +24,8 @@ config.max_steps = 0
 config.data_rand_mirror = True
 config.data_cutoff = False
 config.data_color = 0
-config.data_images_filter = 0
+# config.data_images_filter = 0
+config.data_images_filter = 10  # ignore identity with few pitures
 
 
 # network settings
@@ -93,12 +94,29 @@ network.mnas025.net_multiplier = 0.25
 # dataset settings
 dataset = edict()
 
+# add new dataset.xxx paragraph when train on new dataset!
 dataset.emore = edict()
 dataset.emore.dataset = 'emore'
 dataset.emore.dataset_path = '../datasets/faces_emore'
 dataset.emore.num_classes = 85742
 dataset.emore.image_shape = (112, 112, 3)
-dataset.emore.val_targets = ['lfw', 'agedb_30', 'cfp_fp']  # change !!!
+dataset.emore.val_targets = ['lfw', 'agedb_30', 'cfp_fp']
+
+dataset.celebrity_asian = edict()
+dataset.celebrity_asian.dataset = 'celebrity_asian'
+dataset.celebrity_asian.dataset_path = '../datasets/faces_celebrity'
+dataset.celebrity_asian.num_classes = 84582
+dataset.celebrity_asian.image_shape = (112, 112, 3)
+dataset.celebrity_asian.val_targets = [
+    'lfw', 'agedb_30', 'cfp_fp', 'celebrity_asian']
+
+dataset.emore_celebasian = edict()
+dataset.emore_celebasian.dataset = 'emore_celebasian'
+dataset.emore_celebasian.dataset_path = '../datasets/faces_emore_celebasian'
+dataset.emore_celebasian.num_classes = 84582
+dataset.emore_celebasian.image_shape = (112, 112, 3)
+dataset.emore_celebasian.val_targets = [
+    'lfw', 'agedb_30', 'cfp_fp', 'celebrity_asian']
 
 loss = edict()
 loss.softmax = edict()

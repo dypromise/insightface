@@ -51,7 +51,6 @@ def read_list(path_in):
              item.landmark, item.aligned
              ) = face_preprocess.parse_lst_line(line)
             if not item.aligned and item.landmark is None:
-                # print('ignore line', line)
                 continue
             item.id = _id
             item.label = [label, item.aligned]
@@ -64,15 +63,14 @@ def read_list(path_in):
             _id += 1
         identities.append((last[1], _id))
 
-        # head in recrd, idx: 0
+        # head in record, idx: 0
         item = edict()
         item.flag = 2
         item.id = 0
         item.label = [float(_id), float(_id + len(identities))]
         yield item
 
-        # third part in record
-        # idx: len(faces)+1 ~ len(faces)+1+len(identities)
+        # third part, idx: len(faces)+1 ~ len(faces)+1+len(identities)
         for identity in identities:
             item = edict()
             item.flag = 2
@@ -98,6 +96,8 @@ def image_encode(args, i, item, q_out):
             img = face_preprocess.preprocess(
                 img, bbox=item.bbox, landmark=item.landmark,
                 image_size='%d,%d' % (args.image_h, args.image_w))
+
+            # AFTER PACK BUG!!!!! after pack, header.flag is set to len(label)
             # print("before pack:", header.flag, header.label, header.id)
             s = mx.recordio.pack_img(
                 header, img, quality=args.quality, img_fmt=args.encoding)
@@ -107,7 +107,7 @@ def image_encode(args, i, item, q_out):
             # print(header)
     else:
         header = mx.recordio.IRHeader(item.flag, item.label, item.id, 0)
-        print('write', item.flag, item.id, item.label)
+        # print('write', item.flag, item.id, item.label)
         s = mx.recordio.pack(header, '')
         q_out.put((i, s, oitem))
 

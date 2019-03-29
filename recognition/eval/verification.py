@@ -1,5 +1,4 @@
-"""Helper for evaluation on the Labeled Faces in the Wild dataset 
-"""
+"""Helper for evaluation on the Labeled Faces in the Wild dataset """
 
 # MIT License
 #
@@ -144,7 +143,6 @@ def calculate_val(thresholds, embeddings1, embeddings2, actual_issame,
     indices = np.arange(nrof_pairs)
 
     for fold_idx, (train_set, test_set) in enumerate(k_fold.split(indices)):
-
         # Find the threshold that gives FAR = far_target
         far_train = np.zeros(nrof_thresholds)
         for threshold_idx, threshold in enumerate(thresholds):
@@ -193,17 +191,16 @@ def evaluate(embeddings, actual_issame, nrof_folds=10, pca=0):
 
 
 def load_bin(path, image_size):
-    """ Load pickle bin file
-    """
+    """ Load pickle bin file """
     bins, issame_list = pickle.load(open(path, 'rb'))
     data_list = []
     for flip in [0, 1]:
-        data = nd.empty(
-            (len(issame_list) * 2, 3, image_size[0], image_size[1]))
+        data = nd.empty((
+            len(issame_list) * 2, 3, image_size[0], image_size[1]))
         data_list.append(data)
     for i in xrange(len(issame_list) * 2):
         _bin = bins[i]
-        img = mx.image.imdecode(_bin)
+        img = mx.image.imdecode(_bin)  # decode binary format
         if img.shape[1] != image_size[0]:
             img = mx.image.resize_short(img, image_size[0])
         img = nd.transpose(img, axes=(2, 0, 1))
@@ -379,7 +376,7 @@ def test_badcase(data_set, mx_model, batch_size, name='', data_extra=None,
                 imga = data[ida].asnumpy().transpose(
                     (1, 2, 0))[..., ::-1]  # to bgr
                 imgb = data[idb].asnumpy().transpose((1, 2, 0))[..., ::-1]
-                #print(imga.shape, imgb.shape, violate, asame, _dist)
+                # print(imga.shape, imgb.shape, violate, asame, _dist)
                 if asame:
                     pouts.append((imga, imgb, _dist, best_threshold, ida))
                 else:
