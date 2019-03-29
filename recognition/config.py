@@ -24,8 +24,9 @@ config.max_steps = 0
 config.data_rand_mirror = True
 config.data_cutoff = False
 config.data_color = 0
-# config.data_images_filter = 0
-config.data_images_filter = 10  # ignore identity with few pitures
+# Ignore identity with few pitures. If use image filter, you
+# should set dataset.xxx.num_classes to the left id_nums
+config.data_images_filter = 20
 
 
 # network settings
@@ -94,7 +95,7 @@ network.mnas025.net_multiplier = 0.25
 # dataset settings
 dataset = edict()
 
-# add new dataset.xxx paragraph when train on new dataset!
+# add a new 'dataset.xxx' paragraph when train on new dataset
 dataset.emore = edict()
 dataset.emore.dataset = 'emore'
 dataset.emore.dataset_path = '../datasets/faces_emore'
@@ -113,7 +114,7 @@ dataset.celebrity_asian.val_targets = [
 dataset.emore_celebasian = edict()
 dataset.emore_celebasian.dataset = 'emore_celebasian'
 dataset.emore_celebasian.dataset_path = '../datasets/faces_emore_celebasian'
-dataset.emore_celebasian.num_classes = 84582
+dataset.emore_celebasian.num_classes = 93036  # id_nums after image filter
 dataset.emore_celebasian.image_shape = (112, 112, 3)
 dataset.emore_celebasian.val_targets = [
     'lfw', 'agedb_30', 'cfp_fp', 'celebrity_asian']
@@ -188,7 +189,8 @@ default.wd = 0.0005
 default.mom = 0.9
 default.per_batch_size = 128
 default.ckpt = 3
-default.lr_steps = '100000,160000,220000'
+# default.lr_steps = '100000,160000,220000'
+default.lr_steps = '160000,220000'
 default.models_root = './models'
 
 
