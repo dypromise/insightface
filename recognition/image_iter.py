@@ -68,7 +68,7 @@ class FaceImageIter(io.DataIter):
                         continue
                     self.id2range[identity] = (a, b)
                     self.imgidx += range(a, b)
-                print('d2range(num_classes):', len(self.id2range))
+                print('id2range(num_classes):', len(self.id2range))
             else:
                 self.imgidx = list(self.imgrec.keys)
             if shuffle:

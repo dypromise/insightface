@@ -26,10 +26,12 @@ config.data_cutoff = False
 config.data_color = 0
 # Ignore identity with few pitures. If use image filter, you
 # should set dataset.xxx.num_classes to the left id_nums
-config.data_images_filter = 20
+config.data_images_filter = 10
 
 
+############################################
 # network settings
+############################################
 network = edict()
 
 network.r100 = edict()
@@ -92,7 +94,10 @@ network.mnas025.emb_size = 256
 network.mnas025.net_output = 'GDC'
 network.mnas025.net_multiplier = 0.25
 
+
+############################################
 # dataset settings
+############################################
 dataset = edict()
 
 # add a new 'dataset.xxx' paragraph when train on new dataset
@@ -119,6 +124,18 @@ dataset.emore_celebasian.image_shape = (112, 112, 3)
 dataset.emore_celebasian.val_targets = [
     'lfw', 'agedb_30', 'cfp_fp', 'celebrity_asian']
 
+dataset.glintasia = edict()
+dataset.glintasia.dataset = 'faces_glintasia'
+dataset.glintasia.dataset_path = '../datasets/faces_glintasia'
+dataset.glintasia.num_classes = 33488  # id_nums after image filter
+dataset.glintasia.image_shape = (112, 112, 3)
+dataset.glintasia.val_targets = [
+    'lfw', 'agedb_30', 'cfp_fp']
+
+
+############################################
+# loss settings
+############################################
 loss = edict()
 loss.softmax = edict()
 loss.softmax.loss_name = 'softmax'
@@ -169,7 +186,10 @@ loss.atriplet.triplet_max_ap = 0.0
 loss.atriplet.per_batch_size = 60
 loss.atriplet.lr = 0.05
 
+
+############################################
 # default settings
+############################################
 default = edict()
 
 # default network
