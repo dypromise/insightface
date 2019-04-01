@@ -108,21 +108,21 @@ dataset.emore.num_classes = 85742
 dataset.emore.image_shape = (112, 112, 3)
 dataset.emore.val_targets = ['lfw', 'agedb_30', 'cfp_fp']
 
-dataset.celebrity_asian = edict()
-dataset.celebrity_asian.dataset = 'celebrity_asian'
-dataset.celebrity_asian.dataset_path = '../datasets/faces_celebrity'
-dataset.celebrity_asian.num_classes = 84582
-dataset.celebrity_asian.image_shape = (112, 112, 3)
-dataset.celebrity_asian.val_targets = [
-    'lfw', 'agedb_30', 'cfp_fp', 'celebrity_asian']
+# dataset.celebrity_asian = edict()
+# dataset.celebrity_asian.dataset = 'celebrity_asian'
+# dataset.celebrity_asian.dataset_path = '../datasets/faces_celebrity'
+# dataset.celebrity_asian.num_classes = 84582
+# dataset.celebrity_asian.image_shape = (112, 112, 3)
+# dataset.celebrity_asian.val_targets = [
+#     'lfw', 'agedb_30', 'cfp_fp', 'celebrity_asian']
 
-dataset.emore_celebasian = edict()
-dataset.emore_celebasian.dataset = 'emore_celebasian'
-dataset.emore_celebasian.dataset_path = '../datasets/faces_emore_celebasian'
-dataset.emore_celebasian.num_classes = 93036  # id_nums after image filter
-dataset.emore_celebasian.image_shape = (112, 112, 3)
-dataset.emore_celebasian.val_targets = [
-    'lfw', 'agedb_30', 'cfp_fp', 'celebrity_asian']
+# dataset.emore_celebasian = edict()
+# dataset.emore_celebasian.dataset = 'emore_celebasian'
+# dataset.emore_celebasian.dataset_path = '../datasets/faces_emore_celebasian'
+# dataset.emore_celebasian.num_classes = 93036  # id_nums after image filter
+# dataset.emore_celebasian.image_shape = (112, 112, 3)
+# dataset.emore_celebasian.val_targets = [
+#     'lfw', 'agedb_30', 'cfp_fp', 'celebrity_asian']
 
 dataset.glintasia = edict()
 dataset.glintasia.dataset = 'faces_glintasia'
@@ -130,6 +130,14 @@ dataset.glintasia.dataset_path = '../datasets/faces_glintasia'
 dataset.glintasia.num_classes = 33488  # id_nums after image filter
 dataset.glintasia.image_shape = (112, 112, 3)
 dataset.glintasia.val_targets = [
+    'lfw', 'agedb_30', 'cfp_fp']
+
+dataset.glint = edict()
+dataset.glint.dataset = 'glint'
+dataset.glint.dataset_path = '../datasets/faces_glint'
+dataset.glint.num_classes = 113227  # id_nums after image filter
+dataset.glint.image_shape = (112, 112, 3)
+dataset.glint.val_targets = [
     'lfw', 'agedb_30', 'cfp_fp']
 
 
